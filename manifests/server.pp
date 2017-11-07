@@ -31,6 +31,8 @@ class ossec::server (
   $mysql_name                          = undef,
   $mysql_password                      = undef,
   $mysql_username                      = undef,
+  $server_package                      = $::ossec::params::server_package,
+  $agent_package                       = $::ossec::params::agent_package,
   $server_package_version              = 'installed',
   $manage_repos                        = true,
   $manage_epel_repo                    = true,
