@@ -31,8 +31,7 @@ class ossec::server (
   $mysql_name                          = undef,
   $mysql_password                      = undef,
   $mysql_username                      = undef,
-  $server_package                      = $::ossec::params::server_package,
-  $agent_package                       = $::ossec::params::agent_package,
+  $server_package_name                 = $::ossec::params::server_package,
   $server_package_version              = 'installed',
   $manage_repos                        = true,
   $manage_epel_repo                    = true,
@@ -62,7 +61,7 @@ class ossec::server (
   if $manage_repos {
     # TODO: Allow filtering of EPEL requirement
     class { 'ossec::repo': redhat_manage_epel => $manage_epel_repo }
-    Class['ossec::repo'] -> Package[$ossec::params::server_package]
+    Class['ossec::repo'] -> Package[$server_package_name]
   }
 
   if $use_mysql {
@@ -77,7 +76,7 @@ class ossec::server (
   }
 
   # install package
-  package { $ossec::params::server_package:
+  package { $server_package:
     ensure  => $server_package_version
   }
 
@@ -87,7 +86,7 @@ class ossec::server (
     hasstatus => $ossec::params::service_has_status,
     pattern   => $ossec::params::server_service,
     provider  => $ossec_service_provider,
-    require   => Package[$ossec::params::server_package],
+    require   => Package[$server_package_name],
   }
 
   # configure ossec process list
@@ -95,7 +94,7 @@ class ossec::server (
     owner   => $ossec::params::config_owner,
     group   => $ossec::params::config_group,
     mode    => $ossec::params::config_mode,
-    require => Package[$ossec::params::server_package],
+    require => Package[$server_package_name],
     notify  => Service[$ossec::params::server_service]
   }
   concat::fragment { 'ossec_process_list_10' :
@@ -110,7 +109,7 @@ class ossec::server (
     owner   => $ossec::params::config_owner,
     group   => $ossec::params::config_group,
     mode    => $ossec::params::config_mode,
-    require => Package[$ossec::params::server_package],
+    require => Package[$server_package_name],
     notify  => Service[$ossec::params::server_service]
   }
   concat::fragment { 'ossec.conf_10' :
@@ -156,7 +155,7 @@ class ossec::server (
       group   => $ossec::params::keys_group,
       mode    => $ossec::params::keys_mode,
       notify  => Service[$ossec::params::server_service],
-      require => Package[$ossec::params::server_package],
+      require => Package[$server_package_name],
     }
     concat::fragment { 'var_ossec_etc_client.keys_end' :
       target  => $ossec::params::keys_file,
@@ -172,7 +171,7 @@ class ossec::server (
     group   => $ossec::params::config_group,
     mode    => $ossec::params::config_mode,
     notify  => Service[$ossec::params::server_service],
-    require => Package[$ossec::params::server_package]
+    require => Package[$server_package_name]
   }
 
   file { '/var/ossec/rules/local_rules.xml':
@@ -181,7 +180,7 @@ class ossec::server (
     group   => $ossec::params::config_group,
     mode    => $ossec::params::config_mode,
     notify  => Service[$ossec::params::server_service],
-    require => Package[$ossec::params::server_package]
+    require => Package[$server_package_name]
   }
 
   file { '/var/ossec/etc/local_decoder.xml':
@@ -190,7 +189,7 @@ class ossec::server (
     group   => $ossec::params::config_group,
     mode    => $ossec::params::config_mode,
     notify  => Service[$ossec::params::server_service],
-    require => Package[$ossec::params::server_package]
+    require => Package[$server_package_name]
   }
 
   if ( $manage_client_keys == true ) {
