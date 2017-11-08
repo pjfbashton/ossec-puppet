@@ -76,7 +76,7 @@ class ossec::server (
   }
 
   # install package
-  package { $server_package:
+  package { $server_package_name:
     ensure  => $server_package_version
   }
 
