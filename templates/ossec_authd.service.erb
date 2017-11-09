@@ -1,0 +1,13 @@
+[Unit]
+Description=ossec-authd
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/var/ossec/bin/ossec-authd <%= @authd_options %>
+Restart=on-failure
+RestartSec=20
+SuccessExitStatus=1
+
+[Install]
+WantedBy=multi-user.target

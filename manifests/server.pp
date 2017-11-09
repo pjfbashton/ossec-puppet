@@ -44,6 +44,10 @@ class ossec::server (
   $local_rules_template                = 'ossec/local_rules.xml.erb',
   $shared_agent_template               = 'ossec/ossec_shared_agent.conf.erb',
   $ossec_conf_template                 = 'ossec/10_ossec.conf.erb',
+  $configure_authd                     = false,
+  $authd_options                       = '-i -d',
+  $authd_service_template              = 'ossec/ossec_authd.service.erb',
+  $authd_service_ensure                = 'running',
 ) inherits ossec::params {
   validate_bool(
     $ossec_active_response, $ossec_rootcheck,
@@ -196,4 +200,33 @@ class ossec::server (
     # A separate module to avoid storeconfigs warnings when not managing keys
     include ossec::collect_agent_keys
   }
+
+  if ( $configure_authd == true ) {
+
+    file { '/etc/systemd/system/ossec-authd.service':
+      ensure  => file,
+      mode    => '0644',
+      owner   => 'root',
+      group   => 'root',
+      content => template($authd_service_template)
+      notify  => Exec['daemon_reload'],
+    }
+
+    exec { 'daemon_reload':
+      path    => '/usr/bin:/usr/sbin:/bin:/usr/local/bin',
+      command => 'systemctl daemon-reload',
+      notify  => Service['ossec-authd.service'],
+    }
+
+    service { 'ossec-authd.service':
+      ensure     => $authd_service_ensure,
+      enable     => true,
+      hasrestart => true,
+      hasstatus  => true,
+      require    => File[ '/etc/systemd/system/ossec-authd.service']
+      require    => Package['server_package_name']
+    }
+
+  }
+
 }
