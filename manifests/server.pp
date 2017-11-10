@@ -208,7 +208,7 @@ class ossec::server (
       mode    => '0644',
       owner   => 'root',
       group   => 'root',
-      content => template($authd_service_template)
+      content => template($authd_service_template),
       notify  => Exec['daemon_reload'],
     }
 
@@ -223,8 +223,8 @@ class ossec::server (
       enable     => true,
       hasrestart => true,
       hasstatus  => true,
-      require    => File[ '/etc/systemd/system/ossec-authd.service']
-      require    => Package['server_package_name']
+      require    => File['/etc/systemd/system/ossec-authd.service'],
+      require    => Package['server_package_name'],
     }
 
   }
