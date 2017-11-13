@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/var/ossec/bin/ossec-authd <%= @authd_options %>
-<% if authd_remove_empty_client_keys_file == true then -%>
+<% if @authd_remove_empty_client_keys_file == true then -%>
 # ossec-authd creates an empty clients.key file and it prevents ossec-remoted from starting.
 # We want to initially create that file with dummy content with puppet but only if the file is missing.
 ExecStartPost=/bin/sh -c '/bin/test -s /var/ossec/etc/client.keys || /bin/rm -f /var/ossec/etc/client.keys'
