@@ -49,6 +49,7 @@ class ossec::server (
   $authd_options                       = '-i -d',
   $authd_service_template              = 'ossec/ossec_authd.service.erb',
   $authd_service_ensure                = 'running',
+  $authd_remove_empty_client_keys_file = true,
 ) inherits ossec::params {
   validate_bool(
     $ossec_active_response, $ossec_rootcheck,
